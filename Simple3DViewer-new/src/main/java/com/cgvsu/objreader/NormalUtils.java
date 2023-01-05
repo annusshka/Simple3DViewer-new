@@ -8,7 +8,7 @@ import com.cgvsu.model.*;
 public class NormalUtils {
 
     public static List<Vector3f> calculateNormals(Model model) {
-        ArrayList<float[]> normal = NormalUtils.calculateNormalsInMassiv(model);
+        ArrayList<float[]> normal = NormalUtils.calculateNormalsInArray(model);
         List<Vector3f> answer  = new ArrayList<Vector3f>();
 
         for (float[] current: normal) {
@@ -20,11 +20,11 @@ public class NormalUtils {
     }
     
             public static Model addNormals(Model model) {
-        model.setNormals(calculateNormals(model));
+        model.setNormals((ArrayList)calculateNormals(model));
         return model;
     }
 
-    public static ArrayList<float[]> calculateNormalsInMassiv(Model model) {
+    public static ArrayList<float[]> calculateNormalsInArray(Model model) {
         ArrayList<float[]> vectors = new ArrayList<>();
         for (Vector3f wordsInLine : model.getVertices()) {
             float[] vector = new float[3];
