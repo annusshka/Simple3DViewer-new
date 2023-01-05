@@ -18,11 +18,7 @@ public class NormalUtils {
         }
         return answer;
     }
-    
-        public static Model addNormals(Model model) {
-        model.setNormals(calculateNormals(model));
-        return model;
-    }
+   
 
     public static ArrayList<float[]> calculateNormalsInMassiv(Model model) {
         ArrayList<float[]> vectors = new ArrayList<>();
