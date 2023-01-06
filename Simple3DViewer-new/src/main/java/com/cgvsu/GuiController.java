@@ -4,6 +4,7 @@ import com.cgvsu.math.Math.Vector.Vector3f;
 import com.cgvsu.model.TransformedModel;
 import com.cgvsu.objwriter.ObjWriter;
 import com.cgvsu.render_engine.RenderEngine;
+import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.animation.Animation;
@@ -11,6 +12,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
@@ -48,10 +51,16 @@ public class GuiController {
     private Canvas canvas;
 
     private ArrayList<TransformedModel> models = new ArrayList<>();
+    @FXML
+    private ComboBox listOfModels;
 
-    private TransformedModel transformedModel = null;
+
+    //private TransformedModel transformedModel = null;
 
     private ArrayList<KeyCode> keyCodes = null;
+    private ArrayList<String> modelsNames = new ArrayList<>();
+
+
 
     private Camera camera = new Camera(
             new Vector3f(new float[]{0, 00, 100}),
@@ -62,6 +71,7 @@ public class GuiController {
 
     @FXML
     private void initialize() {
+        listOfModels.setLayoutX(400);
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
         anchorPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> canvas.setHeight(newValue.doubleValue()));
 
@@ -75,9 +85,12 @@ public class GuiController {
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
             camera.setAspectRatio((float) (width / height));
 
-            if (transformedModel != null) {
+
+            if (models != null) {
                 canvas.setOnScroll(this::handleMouseWheelMoved);
                 canvas.setOnMousePressed(this::handleMousePressed);
+                listOfModels.setItems(FXCollections
+                        .observableArrayList(listToArr(modelsNames)));
                 RenderEngine.render(canvas.getGraphicsContext2D(), camera, models,
                         (int) width, (int) height);
             }
@@ -88,6 +101,7 @@ public class GuiController {
 
     FileChooser fileChooser = new FileChooser();
 
+    //возможность сохранить транс и не транс модели
     @FXML
     private void onOpenModelMenuItemClick() {
         FileChooser fileChooser = new FileChooser();
@@ -104,14 +118,30 @@ public class GuiController {
         try {
             String fileContent = Files.readString(fileName);
             Model mesh = ObjReader.read(fileContent, willItWriteInformationToConsole);
-            transformedModel = new TransformedModel(mesh);
+            TransformedModel transformedModel = new TransformedModel(mesh);
             transformedModel.setTransformedModel();
             models.add(transformedModel);
+            modelsNames.add(file.getName());
+
+            //проверить пустоту
             keyCodes = new ArrayList<KeyCode>();
             // todo: обработка ошибок
         } catch (IOException exception) {
 
         }
+    }
+
+    private Object[] listToArr(ArrayList<String> arrayList) {
+        String[] arr = new String[arrayList.size()];
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = arrayList.get(i);
+        }
+        return arr;
+    }
+
+    private int getSelectIndex(ComboBox comboBox){
+        SingleSelectionModel selectionModel = comboBox.getSelectionModel();
+        return selectionModel.getSelectedIndex();
     }
 
     @FXML
@@ -121,7 +151,21 @@ public class GuiController {
         fileChooser.setInitialFileName("Saved Model");
         try {
             File file = fileChooser.showSaveDialog((Stage) canvas.getScene().getWindow());
-            ObjWriter.writeTransformedModel(file.getAbsolutePath(), models.get(models.size() - 1));
+            ObjWriter.writeTransformedModel(file.getAbsolutePath(), models.get(getSelectIndex(listOfModels)));
+            // todo: обработка ошибок
+        } catch (Exception exception) {
+
+        }
+    }
+
+    @FXML
+    private void onWriteTransformedModelMenuItemClick() throws IOException {
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
+        fileChooser.setTitle("Save Model");
+        fileChooser.setInitialFileName("Saved Model");
+        try {
+            File file = fileChooser.showSaveDialog((Stage) canvas.getScene().getWindow());
+            ObjWriter.write(file.getAbsolutePath(), models.get(getSelectIndex(listOfModels)).getTransformedModel());
             // todo: обработка ошибок
         } catch (Exception exception) {
 
@@ -130,6 +174,7 @@ public class GuiController {
     public void onOpenModelFillingPolygons(){
     }
 
+    //камера
     private void handleMouseWheelMoved(ScrollEvent event) {
         final double notches = event.getDeltaY();
         final float x = camera.getPosition().get(0);
@@ -159,6 +204,7 @@ public class GuiController {
         }
     }
 
+    //камера
     private void handleMousePressed(javafx.scene.input.MouseEvent event) {
         var ref = new Object() {
             float prevX = (float) event.getX();
@@ -188,6 +234,7 @@ public class GuiController {
         });
     }
 
+    //не менять
     public void handleKeyEvent(KeyEvent e) {
         KeyCode key = e.getCode();
         if (!keyCodes.contains(key)) {
@@ -196,11 +243,11 @@ public class GuiController {
         handleKeys();
     }
 
+    //не менять
     private void handleKeys() {
         if (keyCodes.contains(KeyCode.G)) {
             handleTranslate();
         } else if (keyCodes.contains(KeyCode.E)) {
-            canvas.setOnScroll(this::handleMouseWheelMoved);
             handleScale();
         } else if (keyCodes.contains(KeyCode.R)) {
             handleRotate();
@@ -209,10 +256,12 @@ public class GuiController {
         }
     }
 
+    //камера
     public void handleKeyReleased(KeyEvent event) {
         keyCodes.remove(event.getCode());
     }
 
+    //не менять
     private void handleTranslate() {
         if (keyCodes.contains(KeyCode.D)) {
             translateX1();
@@ -231,6 +280,7 @@ public class GuiController {
         }
     }
 
+    //не менять
     private void handleScale() {
         if (keyCodes.contains(KeyCode.D)) {
             scaleByX();
@@ -249,6 +299,7 @@ public class GuiController {
         }
     }
 
+    //не менять
     private void handleRotate() {
         if (keyCodes.contains(KeyCode.W)) {
             rotateAroundX();
@@ -270,6 +321,7 @@ public class GuiController {
         }
     }
 
+    //камера
     private void handleCameraMove() {
         if (keyCodes.contains(KeyCode.W)) {
             handleCameraUp();
@@ -319,123 +371,125 @@ public class GuiController {
         camera.movePosition(new Vector3f(new float[]{0, -TRANSLATION, 0}));
     }
 
+    //для актуальной
     @FXML
     public void scaleByX() {
-        float scaleParam = transformedModel.getScaleParams().get(0);
+        float scaleParam = models.get(0).getScaleParams().get(0);
         if (scaleParam - 1 <= EPS) {
-            transformedModel.setScaleXParams(scaleParam * SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleXParams(scaleParam * SCALE);
         } else {
-            transformedModel.setScaleXParams(SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleXParams(SCALE);
         }
     }
 
+    //для актуальной
     @FXML
     public void reduceScaleByX() {
-        float scaleParam = transformedModel.getScaleParams().get(0);
+        float scaleParam = models.get(getSelectIndex(listOfModels)).getScaleParams().get(0);
         if (scaleParam - 1 <= EPS) {
-            transformedModel.setScaleXParams(-scaleParam * SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleXParams(-scaleParam * SCALE);
         } else {
-            transformedModel.setScaleXParams(-SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleXParams(-SCALE);
         }
     }
 
     @FXML
     public void scaleByY() {
-        float scaleParam = transformedModel.getScaleParams().get(1);
+        float scaleParam = models.get(getSelectIndex(listOfModels)).getScaleParams().get(1);
         if (scaleParam - 1 <= EPS) {
-            transformedModel.setScaleYParams(scaleParam * SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleYParams(scaleParam * SCALE);
         } else {
-            transformedModel.setScaleYParams(SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleYParams(SCALE);
         }
     }
 
     @FXML
     public void reduceScaleByY() {
-        float scaleParam = transformedModel.getScaleParams().get(1);
+        float scaleParam = models.get(getSelectIndex(listOfModels)).getScaleParams().get(1);
         if (scaleParam - 1 <= EPS) {
-            transformedModel.setScaleYParams(-scaleParam * SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleYParams(-scaleParam * SCALE);
         } else {
-            transformedModel.setScaleYParams(-SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleYParams(-SCALE);
         }
     }
 
     @FXML
     public void scaleByZ() {
-        float scaleParam = transformedModel.getScaleParams().get(2);
+        float scaleParam = models.get(getSelectIndex(listOfModels)).getScaleParams().get(2);
         if (scaleParam - 1 <= EPS) {
-            transformedModel.setScaleZParams(scaleParam * SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleZParams(scaleParam * SCALE);
         } else {
-            transformedModel.setScaleZParams(SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleZParams(SCALE);
         }
     }
 
     @FXML
     public void reduceScaleByZ() {
-        float scaleParam = transformedModel.getScaleParams().get(2);
+        float scaleParam = models.get(getSelectIndex(listOfModels)).getScaleParams().get(2);
         if (scaleParam - 1 <= EPS) {
-            transformedModel.setScaleZParams(-scaleParam * SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleZParams(-scaleParam * SCALE);
         } else {
-            transformedModel.setScaleZParams(-SCALE);
+            models.get(getSelectIndex(listOfModels)).setScaleZParams(-SCALE);
         }
     }
 
     @FXML
     public void rotateAroundX() {
-        transformedModel.setRotateXParam(ROTATE_PARAM);
+        models.get(getSelectIndex(listOfModels)).setRotateXParam(ROTATE_PARAM);
     }
 
     @FXML
     public void rotateAroundX1() {
-        transformedModel.setRotateXParam(-ROTATE_PARAM);
+        models.get(getSelectIndex(listOfModels)).setRotateXParam(-ROTATE_PARAM);
     }
 
     @FXML
     public void rotateAroundY() {
-        transformedModel.setRotateYParam(ROTATE_PARAM);
+        models.get(getSelectIndex(listOfModels)).setRotateYParam(ROTATE_PARAM);
     }
 
     @FXML
     public void rotateAroundY1() {
-        transformedModel.setRotateYParam(-ROTATE_PARAM);
+        models.get(getSelectIndex(listOfModels)).setRotateYParam(-ROTATE_PARAM);
     }
 
     @FXML
     public void rotateAroundZ() {
-        transformedModel.setRotateZParam(ROTATE_PARAM);
+        models.get(getSelectIndex(listOfModels)).setRotateZParam(ROTATE_PARAM);
     }
 
     @FXML
     public void rotateAroundZ1() {
-        transformedModel.setRotateZParam(-ROTATE_PARAM);
+        models.get(getSelectIndex(listOfModels)).setRotateZParam(-ROTATE_PARAM);
     }
 
     @FXML
     public void translateX() {
-        transformedModel.setTranslateXParam(TRANSLATION);
+        models.get(getSelectIndex(listOfModels)).setTranslateXParam(TRANSLATION);
     }
 
     @FXML
     public void translateX1() {
-        transformedModel.setTranslateXParam(-TRANSLATION);
+        models.get(getSelectIndex(listOfModels)).setTranslateXParam(-TRANSLATION);
     }
 
     @FXML
     public void translateY() {
-        transformedModel.setTranslateYParam(TRANSLATION);
+        models.get(getSelectIndex(listOfModels)).setTranslateYParam(TRANSLATION);
     }
 
     @FXML
     public void translateY1() {
-        transformedModel.setTranslateYParam(-TRANSLATION);
+        models.get(getSelectIndex(listOfModels)).setTranslateYParam(-TRANSLATION);
     }
 
     @FXML
     public void translateZ() {
-        transformedModel.setTranslateZParam(TRANSLATION);
+        models.get(getSelectIndex(listOfModels)).setTranslateZParam(TRANSLATION);
     }
 
     @FXML
     public void translateZ1() {
-        transformedModel.setTranslateZParam(-TRANSLATION);
+        models.get(getSelectIndex(listOfModels)).setTranslateZParam(-TRANSLATION);
     }
 }
