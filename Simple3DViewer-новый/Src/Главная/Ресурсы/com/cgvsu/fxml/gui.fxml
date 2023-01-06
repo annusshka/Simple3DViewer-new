@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.ComboBox?>
+<AnchorPane fx:id="anchorPane" xmlns:fx="http://javafx.com/fxml" fx:controller="com.cgvsu.GuiController">
+    <MenuBar>
+        <Menu mnemonicParsing="false" text="File">
+            <MenuItem mnemonicParsing="false" onAction="#onOpenModelMenuItemClick" text="Load Model">
+            <accelerator>
+                <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="F"/>
+            </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#onWriteModelMenuItemClick" text="Write to file model">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="S"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#onWriteTransformedModelMenuItemClick" text="Write to  file transformed model">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" code="S"/>
+                </accelerator>
+            </MenuItem>
+        </Menu>
+
+        <Menu mnemonicParsing="false" text="Fill Polygons">
+            <MenuItem mnemonicParsing="false" onAction="#onOpenModelFillingPolygons" text="Fill Polygons">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="A"/>
+                </accelerator>
+            </MenuItem>
+        </Menu>
+
+        <Menu mnemonicParsing="false" text="Camera Options">
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraForward" text="Forward">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" meta="UP" shift="UP" shortcut="UP" code="UP"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraBackward" text="Backward">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" meta="UP" shift="UP" shortcut="UP" code="DOWN"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraLeft" text="Left">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" meta="UP" shift="UP" shortcut="UP" code="LEFT"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraRight" text="Right">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" meta="UP" shift="UP" shortcut="UP" code="RIGHT"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraUp" text="Up">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" meta="UP" shift="UP" shortcut="UP" code="W"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraDown" text="Down">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" meta="UP" shift="UP" shortcut="UP" code="S"/>
+                </accelerator>
+            </MenuItem>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Conveyor Options">
+            <MenuItem mnemonicParsing="false" onAction="#scaleByX" text="Scale By X">
+                <accelerator>
+                     <KeyCodeCombination alt="DOWN" control="UP" meta="UP" shift="UP" shortcut="UP" code="X"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#reduceScaleByX" text="Scale By 1/X">
+                <accelerator>
+                    <KeyCodeCombination alt="DOWN" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="X"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#scaleByY" text="Scale By Y">
+                <accelerator>
+                    <KeyCodeCombination alt="DOWN" control="UP" meta="UP" shift="UP" shortcut="UP" code="Y"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#reduceScaleByY" text="Scale By 1/Y">
+                <accelerator>
+                    <KeyCodeCombination alt="DOWN" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="Y"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#scaleByZ" text="Scale By Z">
+                <accelerator>
+                    <KeyCodeCombination alt="DOWN" control="UP" meta="UP" shift="UP" shortcut="UP" code="Z"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#reduceScaleByZ" text="Scale By 1/Z">
+                <accelerator>
+                    <KeyCodeCombination alt="DOWN" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="Z"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#rotateAroundX" text="Rotate Around X">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" meta="DOWN" shift="UP" shortcut="UP" code="X"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#rotateAroundX1" text="Reverse Rotate Around X">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="DOWN" shift="UP" shortcut="UP" code="X"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#rotateAroundY" text="Rotate Around Y">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" meta="DOWN" shift="UP" shortcut="UP" code="Y"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#rotateAroundY1" text="Reverse Rotate Around Y">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="DOWN" shift="UP" shortcut="UP" code="Y"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#rotateAroundZ" text="Rotate Around Z">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" meta="DOWN" shift="UP" shortcut="UP" code="Z"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#rotateAroundZ1" text="Reverse Rotate Around Z">
+            <accelerator>
+                <KeyCodeCombination alt="UP" control="DOWN" meta="DOWN" shift="UP" shortcut="UP" code="Z"/>
+            </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#translateX" text="Translate Right">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="RIGHT"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#translateX1" text="Translate Left">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="LEFT"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#translateY" text="Translate Up">
+                <accelerator>
+                    <KeyCodeCombination alt="DOWN" control="UP" meta="UP" shift="UP" shortcut="UP" code="W"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#translateY1" text="Translate Down">
+                <accelerator>
+                    <KeyCodeCombination alt="DOWN" control="UP" meta="UP" shift="UP" shortcut="UP" code="s"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#translateZ" text="Translate Forward">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="UP"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#translateZ1" text="Translate Backward">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" code="DOWN"/>
+                </accelerator>
+            </MenuItem>
+        </Menu>
+    </MenuBar>
+    <ComboBox fx:id="listOfModels" />
+
+    <Canvas fx:id="canvas" width="1600" height="870" AnchorPane.topAnchor="30.0"/>
+</AnchorPane>
